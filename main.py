@@ -6,8 +6,8 @@ from utime import sleep_ms
 motion = PiicoDev_MPU6050()
 
 while True:
-    accel = motion.get_accel() # read the accelerometer [ms^-2]
-    gyro = motion.get_gyro()   # read the gyro [deg/s]
+    accel = motion.get_accel_data() # read the accelerometer [ms^-2]
+    gyro = motion.get_gyro_data()   # read the gyro [deg/s]
     temp = motion.get_temp()   # read the device temperature [degC]
 
     print("{}  {}  {}".format(accel, gyro, temp)) # print the data
