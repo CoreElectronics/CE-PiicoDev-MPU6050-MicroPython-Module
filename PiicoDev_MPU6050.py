@@ -69,37 +69,25 @@ class PiicoDev_MPU6050(object):
         self.addr = addr
         try:
             # Wake up the MPU-6050 since it starts in sleep mode
-#             self.i2c.UnifiedWrite(self.addr, bytearray([self.PWR_MGMT_1,0x00]))
             self.i2c.write8(self.addr, bytes([self.PWR_MGMT_1]), bytes([0x00]))
             print('Device 0x{:02X} found'.format(self.addr))
         except Exception:
             print('Device 0x{:02X} not found'.format(self.addr))
 
-    # I2C communication methods
+    # I2C communication method to read two I2C registers and combine them into a signed integer
     def read_i2c_word(self, register_high):
-        """Read two i2c registers and combine them into a signed integer
-        """
         # Read the data from the registers
-        
-#         self.i2c.UnifiedWrite(self.addr, bytearray([register_high])) # TODO delete old code
-#         rawData = self.i2c.UnifiedRead(self.addr, 2) # TODO delete old code
-
-#         rawData = self.i2c.read16(self.addr, bytes([register_high])) # TODO delete old code
-
         rawData = self.i2c.readfrom_mem(self.addr, register_high, 2)
-        
-        value = (rawData[0] << 8) + rawData[1] # TODO perhaps refactor this operation, it is used in other devices eg TMP117
+        value = (int.from_bytes(rawData, 'big'))
         if (value >= 0x8000):
             return -((65535 - value) + 1)
         else:
             return value
 
-    # MPU-6050 Methods
+    # Reads the temperature from the onboard temperature sensor of the MPU-6050.
+    # Returns the temperature [ degC ].
+    def read_temperature(self):
 
-    def get_temp(self):
-        """Reads the temperature from the onboard temperature sensor of the MPU-6050.
-        Returns the temperature in degrees Celsius.
-        """
         # Get the raw data
         raw_temp = self.read_i2c_word(self.TEMP_OUT0)
         # Get the actual temperature using the formule given in the
@@ -109,29 +97,20 @@ class PiicoDev_MPU6050(object):
         # Return the temperature
         return actual_temp
 
+    # Sets the range of the accelerometer
+    # accel_range : the range to set the accelerometer to. Using a pre-defined range is advised.
     def set_accel_range(self, accel_range):
-        """Sets the range of the accelerometer to range.
-        accel_range -- the range to set the accelerometer to. Using a
-        pre-defined range is advised.
-        """
         # First change it to 0x00 to make sure we write the correct value later
-#         self.i2c.UnifiedWrite(self.addr, bytearray([self.ACCEL_CONFIG, 0x00])) # TODO delete old code
         self.i2c.write8(self.addr, bytes([self.ACCEL_CONFIG]), bytes([0x00]))
 
         # Write the new range to the ACCEL_CONFIG register
-#         self.i2c.UnifiedWrite(self.addr, bytearray([self.ACCEL_CONFIG, accel_range])) # TODO delete old code
         self.i2c.write8(self.addr, bytes([self.ACCEL_CONFIG]), bytes([accel_range]))
-
-    def read_accel_range(self, raw = False):
-        """Reads the range the accelerometer is set to.
-        If raw is True, it will return the raw value from the ACCEL_CONFIG
-        register
-        If raw is False, it will return an integer: -1, 2, 4, 8 or 16. When it
-        returns -1 something went wrong.
-        """
+    
+    # Gets the range the accelerometer is set to.
+    # If raw is True, it will return the raw value from the ACCEL_CONFIG register
+    # If raw is False, it will return an integer: -1, 2, 4, 8 or 16. When it returns -1 something went wrong.
+    def get_accel_range(self, raw = False):
         # Get the raw value
-#         self.i2c.UnifiedWrite(self.addr, bytearray([self.ACCEL_CONFIG])) # TODO delete old code
-#         raw_data = self.i2c.UnifiedRead(self.addr, 2) # TODO delete old code
         raw_data = self.i2c.read16(self.addr, bytes([self.ACCEL_CONFIG]))
         if raw is True:
             return raw_data[0]
@@ -147,19 +126,18 @@ class PiicoDev_MPU6050(object):
             else:
                 return -1
 
-    def get_accel_data(self, g = False):
-        """Gets and returns the X, Y and Z values from the accelerometer.
-        If g is True, it will return the data in g
-        If g is False, it will return the data in m/s^2
-        Returns a dictionary with the measurement results.
-        """
+    # Reads and returns the X, Y and Z values from the accelerometer.
+    # If g is True, it will return the data in g
+    # If g is False, it will return the data in m/s^2
+    # Returns a dictionary with the measurement results.
+    def read_accel_data(self, g = False):
         # Read the data from the MPU-6050
         x = self.read_i2c_word(self.ACCEL_XOUT0)
         y = self.read_i2c_word(self.ACCEL_YOUT0)
         z = self.read_i2c_word(self.ACCEL_ZOUT0)
 
         accel_scale_modifier = None
-        accel_range = self.read_accel_range(True)
+        accel_range = self.get_accel_range(True)
 
         if accel_range == self.ACCEL_RANGE_2G:
             accel_scale_modifier = self.ACCEL_SCALE_MODIFIER_2G
@@ -184,30 +162,22 @@ class PiicoDev_MPU6050(object):
             y = y * self.GRAVITIY_MS2
             z = z * self.GRAVITIY_MS2
             return {'x': x, 'y': y, 'z': z}
-
+        
+    # Sets the range of the gyroscope.
+    # gyro_range : the range to set the gyroscope to. Using a pre-defined range is advised.
     def set_gyro_range(self, gyro_range):
-        """Sets the range of the gyroscope to range.
-        gyro_range -- the range to set the gyroscope to. Using a pre-defined
-        range is advised.
-        """
         # First change it to 0x00 to make sure we write the correct value later
-#         self.i2c.UnifiedWrite(self.addr, bytearray([self.GYRO_CONFIG, 0x00])) # TODO delete old code
         self.i2c.write8(self.addr, bytes([self.GYRO_CONFIG]), bytes([0x00]))
 
         # Write the new range to the ACCEL_CONFIG register
-#         self.i2c.UnifiedWrite(self.addr, bytearray([self.GYRO_CONFIG, gyro_range])) # TODO delete old code
         self.i2c.write8(self.addr, bytes([self.GYRO_CONFIG]), bytes([gyro_range]))
 
-    def read_gyro_range(self, raw = False):
-        """Reads the range the gyroscope is set to.
-        If raw is True, it will return the raw value from the GYRO_CONFIG
-        register.
-        If raw is False, it will return 250, 500, 1000, 2000 or -1. If the
-        returned value is equal to -1 something went wrong.
-        """
+    # Gets the range the gyroscope is set to.
+    # If raw is True, it will return the raw value from the GYRO_CONFIG register.
+    # If raw is False, it will return 250, 500, 1000, 2000 or -1.
+    # If the returned value is equal to -1 something went wrong.
+    def get_gyro_range(self, raw = False):
         # Get the raw value
-#         self.i2c.UnifiedWrite(self.addr, bytearray([self.GYRO_CONFIG])) # TODO delete old code
-#         raw_data = self.i2c.UnifiedRead(self.addr, 1) # TODO delete old code
         raw_data = self.i2c.read16(self.addr, bytes([self.GYRO_CONFIG]))
 
         if raw is True:
@@ -224,17 +194,16 @@ class PiicoDev_MPU6050(object):
             else:
                 return -1
 
-    def get_gyro_data(self):
-        """Gets and returns the X, Y and Z values from the gyroscope.
-        Returns the read values in a dictionary.
-        """
+    # Gets and returns the X, Y and Z values from the gyroscope.
+    # Returns the read values in a dictionary.
+    def read_gyro_data(self):
         # Read the raw data from the MPU-6050
         x = self.read_i2c_word(self.GYRO_XOUT0)
         y = self.read_i2c_word(self.GYRO_YOUT0)
         z = self.read_i2c_word(self.GYRO_ZOUT0)
 
         gyro_scale_modifier = None
-        gyro_range = self.read_gyro_range(True)
+        gyro_range = self.get_gyro_range(True)
 
         if gyro_range == self.GYRO_RANGE_250DEG:
             gyro_scale_modifier = self.GYRO_SCALE_MODIFIER_250DEG
