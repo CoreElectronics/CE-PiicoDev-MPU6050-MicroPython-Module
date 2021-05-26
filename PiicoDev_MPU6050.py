@@ -1,4 +1,4 @@
-# Class to read data from the Core Electronics PiicoDev MPU-6050 Gyroscope & Accelerometer
+# Class to read data from the Core Electronics PiicoDev Motion Sensor MPU-6050
 # Ported to MicroPython by Peter Johnston at Core Electronics APR 2021
 # Original repo https://github.com/nickcoutsos/MPU-6050-Python
 
