@@ -1,17 +1,15 @@
 # PiicoDev® MPU6050 MicroPython Module
 
-<!-- TODO update link -->
-This is the firmware repo for the [Core Electronics PiicoDev® Motion Sensor MPU-6050](https://core-electronics.com.au)
+This is the firmware repo for the [Core Electronics PiicoDev® Motion Sensor MPU-6050](https://core-electronics.com.au/catalog/product/view/sku/CE07822)
 
 This module depends on the [PiicoDev Unified Library](https://github.com/CoreElectronics/CE-PiicoDev-Unified). Place `PiicoDev_Unified.py` in the same directory.
 
-<!-- TODO update tutorial link
-See the [Quickstart Guide](https://core-electronics.com.au/tutorials/quickstart-guide-piicodev-precision-temperature-sensor-tmp117-and-micropython.html)
+See the [Quickstart Guide](https://piicodev/p9)
 
 This module has been tested on:
- - Micro:bit v1, (expected to work with Micro:bit v2 without changes)
+ - Micro:bit v2
  - Raspberry Pi Pico
- -->
+ - Raspberry Pi SBC
 
 # License
 This project is open source - please review the LICENSE.md file for further licensing information.
