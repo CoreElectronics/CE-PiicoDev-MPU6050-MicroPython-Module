@@ -1,5 +1,5 @@
 # Class to read data from the Core Electronics PiicoDev Motion Sensor MPU-6050
-# Ported to MicroPython by Peter Johnston at Core Electronics APR 2021
+# Ported to MicroPython by Peter Johnston and Michael Ruppeat Core Electronics APR 2021
 # Original repo https://github.com/nickcoutsos/MPU-6050-Python
 
 from PiicoDev_Unified import *
@@ -126,24 +126,24 @@ class PiicoDev_MPU6050(object):
         y = self.read_i2c_word(self.ACCEL_YOUT0)
         z = self.read_i2c_word(self.ACCEL_ZOUT0)
 
-        accel_scale_modifier = None
+        scaler = None
         accel_range = self.get_accel_range(True)
 
         if accel_range == self.ACC_RNG_2G:
-            accel_scale_modifier = self.ACC_SCLR_2G
+            scaler = self.ACC_SCLR_2G
         elif accel_range == self.ACC_RNG_4G:
-            accel_scale_modifier = self.ACC_SCLR_4G
+            scaler = self.ACC_SCLR_4G
         elif accel_range == self.ACC_RNG_8G:
-            accel_scale_modifier = self.ACC_SCLR_8G
+            scaler = self.ACC_SCLR_8G
         elif accel_range == self.ACC_RNG_16G:
-            accel_scale_modifier = self.ACC_SCLR_16G
+            scaler = self.ACC_SCLR_16G
         else:
-            print("Unkown range - accel_scale_modifier set to self.ACC_SCLR_2G")
-            accel_scale_modifier = self.ACC_SCLR_2G
+            print("Unkown range - scaler set to self.ACC_SCLR_2G")
+            scaler = self.ACC_SCLR_2G
 
-        x = x / accel_scale_modifier
-        y = y / accel_scale_modifier
-        z = z / accel_scale_modifier
+        x = x / scaler
+        y = y / scaler
+        z = z / scaler
 
         if g is True:
             return {'x': x, 'y': y, 'z': z}
@@ -190,23 +190,23 @@ class PiicoDev_MPU6050(object):
         y = self.read_i2c_word(self.GYRO_YOUT0)
         z = self.read_i2c_word(self.GYRO_ZOUT0)
 
-        gyro_scale_modifier = None
+        scaler = None
         gyro_range = self.get_gyro_range(True)
 
         if gyro_range == self.GYR_RNG_250DEG:
-            gyro_scale_modifier = self.GYR_SCLR_250DEG
+            scaler = self.GYR_SCLR_250DEG
         elif gyro_range == self.GYR_RNG_500DEG:
-            gyro_scale_modifier = self.GYR_SCLR_500DEG
+            scaler = self.GYR_SCLR_500DEG
         elif gyro_range == self.GYR_RNG_1000DEG:
-            gyro_scale_modifier = self.GYR_SCLR_1000DEG
+            scaler = self.GYR_SCLR_1000DEG
         elif gyro_range == self.GYR_RNG_2000DEG:
-            gyro_scale_modifier = self.GYR_SCLR_2000DEG
+            scaler = self.GYR_SCLR_2000DEG
         else:
-            print("Unkown range - gyro_scale_modifier set to self.GYR_SCLR_250DEG")
-            gyro_scale_modifier = self.GYR_SCLR_250DEG
+            print("Unkown range - scaler set to self.GYR_SCLR_250DEG")
+            scaler = self.GYR_SCLR_250DEG
 
-        x = x / gyro_scale_modifier
-        y = y / gyro_scale_modifier
-        z = z / gyro_scale_modifier
+        x = x / scaler
+        y = y / scaler
+        z = z / scaler
 
         return {'x': x, 'y': y, 'z': z}
