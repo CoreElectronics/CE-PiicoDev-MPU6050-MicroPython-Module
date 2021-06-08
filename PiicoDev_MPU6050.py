@@ -121,7 +121,6 @@ class PiicoDev_MPU6050(object):
     # Reads and returns the X, Y and Z values from the accelerometer.
     # Returns dictionary data in g or m/s^2 (g=False)
     def read_accel_data(self, g = False):
-        # Read the data from the MPU-6050
         x = self.read_i2c_word(self.ACCEL_XOUT0)
         y = self.read_i2c_word(self.ACCEL_YOUT0)
         z = self.read_i2c_word(self.ACCEL_ZOUT0)
