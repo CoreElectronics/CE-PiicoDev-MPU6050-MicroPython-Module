@@ -3,37 +3,38 @@
 # Original repo https://github.com/nickcoutsos/MPU-6050-Python
 
 from PiicoDev_Unified import *
+from math import sqrt
 i2c = PiicoDev_Unified_I2C()
 
 # Address
 _MPU6050_ADDRESS = 0x68
 
 class PiicoDev_MPU6050(object):
-    
+
     # Global Variables
     GRAVITIY_MS2 = 9.80665
 
     # Scale Modifiers
-    ACCEL_SCALE_MODIFIER_2G = 16384.0
-    ACCEL_SCALE_MODIFIER_4G = 8192.0
-    ACCEL_SCALE_MODIFIER_8G = 4096.0
-    ACCEL_SCALE_MODIFIER_16G = 2048.0
+    ACC_SCLR_2G = 16384.0
+    ACC_SCLR_4G = 8192.0
+    ACC_SCLR_8G = 4096.0
+    ACC_SCLR_16G = 2048.0
 
-    GYRO_SCALE_MODIFIER_250DEG = 131.0
-    GYRO_SCALE_MODIFIER_500DEG = 65.5
-    GYRO_SCALE_MODIFIER_1000DEG = 32.8
-    GYRO_SCALE_MODIFIER_2000DEG = 16.4
+    GYR_SCLR_250DEG = 131.0
+    GYR_SCLR_500DEG = 65.5
+    GYR_SCLR_1000DEG = 32.8
+    GYR_SCLR_2000DEG = 16.4
 
     # Pre-defined ranges
-    ACCEL_RANGE_2G = 0x00
-    ACCEL_RANGE_4G = 0x08
-    ACCEL_RANGE_8G = 0x10
-    ACCEL_RANGE_16G = 0x18
+    ACC_RNG_2G = 0x00
+    ACC_RNG_4G = 0x08
+    ACC_RNG_8G = 0x10
+    ACC_RNG_16G = 0x18
 
-    GYRO_RANGE_250DEG = 0x00
-    GYRO_RANGE_500DEG = 0x08
-    GYRO_RANGE_1000DEG = 0x10
-    GYRO_RANGE_2000DEG = 0x18
+    GYR_RNG_250DEG = 0x00
+    GYR_RNG_500DEG = 0x08
+    GYR_RNG_1000DEG = 0x10
+    GYR_RNG_2000DEG = 0x18
 
     # MPU-6050 Registers
     PWR_MGMT_1 = 0x6B
@@ -63,7 +64,7 @@ class PiicoDev_MPU6050(object):
 
     ACCEL_CONFIG = 0x1C
     GYRO_CONFIG = 0x1B
-    
+
     def __init__(self, addr=_MPU6050_ADDRESS, i2c_=i2c):
         self.i2c = i2c_
         self.addr = addr
@@ -85,51 +86,40 @@ class PiicoDev_MPU6050(object):
             return value
 
     # Reads the temperature from the onboard temperature sensor of the MPU-6050.
-    # Returns the temperature [ degC ].
+    # Returns the temperature [degC].
     def read_temperature(self):
-
-        # Get the raw data
         raw_temp = self.read_i2c_word(self.TEMP_OUT0)
-        # Get the actual temperature using the formule given in the
-        # MPU-6050 Register Map and Descriptions revision 4.2, page 30
         actual_temp = (raw_temp / 340) + 36.53
-
-        # Return the temperature
         return actual_temp
 
     # Sets the range of the accelerometer
     # accel_range : the range to set the accelerometer to. Using a pre-defined range is advised.
     def set_accel_range(self, accel_range):
-        # First change it to 0x00 to make sure we write the correct value later
         self.i2c.write8(self.addr, bytes([self.ACCEL_CONFIG]), bytes([0x00]))
-
-        # Write the new range to the ACCEL_CONFIG register
         self.i2c.write8(self.addr, bytes([self.ACCEL_CONFIG]), bytes([accel_range]))
-    
+
     # Gets the range the accelerometer is set to.
-    # If raw is True, it will return the raw value from the ACCEL_CONFIG register
-    # If raw is False, it will return an integer: -1, 2, 4, 8 or 16. When it returns -1 something went wrong.
+    # raw=True: Returns raw value from the ACCEL_CONFIG register
+    # raw=False: Return integer: -1, 2, 4, 8 or 16. When it returns -1 something went wrong.
     def get_accel_range(self, raw = False):
         # Get the raw value
         raw_data = self.i2c.read16(self.addr, bytes([self.ACCEL_CONFIG]))
         if raw is True:
             return raw_data[0]
         elif raw is False:
-            if raw_data[0] == self.ACCEL_RANGE_2G:
+            if raw_data[0] == self.ACC_RNG_2G:
                 return 2
-            elif raw_data[0] == self.ACCEL_RANGE_4G:
+            elif raw_data[0] == self.ACC_RNG_4G:
                 return 4
-            elif raw_data[0] == self.ACCEL_RANGE_8G:
+            elif raw_data[0] == self.ACC_RNG_8G:
                 return 8
-            elif raw_data[0] == self.ACCEL_RANGE_16G:
+            elif raw_data[0] == self.ACC_RNG_16G:
                 return 16
             else:
                 return -1
 
     # Reads and returns the X, Y and Z values from the accelerometer.
-    # If g is True, it will return the data in g
-    # If g is False, it will return the data in m/s^2
-    # Returns a dictionary with the measurement results.
+    # Returns dictionary data in g or m/s^2 (g=False)
     def read_accel_data(self, g = False):
         # Read the data from the MPU-6050
         x = self.read_i2c_word(self.ACCEL_XOUT0)
@@ -139,17 +129,17 @@ class PiicoDev_MPU6050(object):
         accel_scale_modifier = None
         accel_range = self.get_accel_range(True)
 
-        if accel_range == self.ACCEL_RANGE_2G:
-            accel_scale_modifier = self.ACCEL_SCALE_MODIFIER_2G
-        elif accel_range == self.ACCEL_RANGE_4G:
-            accel_scale_modifier = self.ACCEL_SCALE_MODIFIER_4G
-        elif accel_range == self.ACCEL_RANGE_8G:
-            accel_scale_modifier = self.ACCEL_SCALE_MODIFIER_8G
-        elif accel_range == self.ACCEL_RANGE_16G:
-            accel_scale_modifier = self.ACCEL_SCALE_MODIFIER_16G
+        if accel_range == self.ACC_RNG_2G:
+            accel_scale_modifier = self.ACC_SCLR_2G
+        elif accel_range == self.ACC_RNG_4G:
+            accel_scale_modifier = self.ACC_SCLR_4G
+        elif accel_range == self.ACC_RNG_8G:
+            accel_scale_modifier = self.ACC_SCLR_8G
+        elif accel_range == self.ACC_RNG_16G:
+            accel_scale_modifier = self.ACC_SCLR_16G
         else:
-            print("Unkown range - accel_scale_modifier set to self.ACCEL_SCALE_MODIFIER_2G")
-            accel_scale_modifier = self.ACCEL_SCALE_MODIFIER_2G
+            print("Unkown range - accel_scale_modifier set to self.ACC_SCLR_2G")
+            accel_scale_modifier = self.ACC_SCLR_2G
 
         x = x / accel_scale_modifier
         y = y / accel_scale_modifier
@@ -162,20 +152,18 @@ class PiicoDev_MPU6050(object):
             y = y * self.GRAVITIY_MS2
             z = z * self.GRAVITIY_MS2
             return {'x': x, 'y': y, 'z': z}
-        
-    # Sets the range of the gyroscope.
-    # gyro_range : the range to set the gyroscope to. Using a pre-defined range is advised.
-    def set_gyro_range(self, gyro_range):
-        # First change it to 0x00 to make sure we write the correct value later
-        self.i2c.write8(self.addr, bytes([self.GYRO_CONFIG]), bytes([0x00]))
 
-        # Write the new range to the ACCEL_CONFIG register
+    def read_accel_abs(self, g=False):
+        d=self.read_accel_data(g)
+        return sqrt(d['x']**2+d['y']**2+d['z']**2)
+
+    def set_gyro_range(self, gyro_range):
+        self.i2c.write8(self.addr, bytes([self.GYRO_CONFIG]), bytes([0x00]))
         self.i2c.write8(self.addr, bytes([self.GYRO_CONFIG]), bytes([gyro_range]))
 
     # Gets the range the gyroscope is set to.
-    # If raw is True, it will return the raw value from the GYRO_CONFIG register.
-    # If raw is False, it will return 250, 500, 1000, 2000 or -1.
-    # If the returned value is equal to -1 something went wrong.
+    # raw=True: return raw value from GYRO_CONFIG register
+    # raw=False: return range in deg/s
     def get_gyro_range(self, raw = False):
         # Get the raw value
         raw_data = self.i2c.read16(self.addr, bytes([self.GYRO_CONFIG]))
@@ -183,13 +171,13 @@ class PiicoDev_MPU6050(object):
         if raw is True:
             return raw_data[0]
         elif raw is False:
-            if raw_data[0] == self.GYRO_RANGE_250DEG:
+            if raw_data[0] == self.GYR_RNG_250DEG:
                 return 250
-            elif raw_data[0] == self.GYRO_RANGE_500DEG:
+            elif raw_data[0] == self.GYR_RNG_500DEG:
                 return 500
-            elif raw_data[0] == self.GYRO_RANGE_1000DEG:
+            elif raw_data[0] == self.GYR_RNG_1000DEG:
                 return 1000
-            elif raw_data[0] == self.GYRO_RANGE_2000DEG:
+            elif raw_data[0] == self.GYR_RNG_2000DEG:
                 return 2000
             else:
                 return -1
@@ -205,17 +193,17 @@ class PiicoDev_MPU6050(object):
         gyro_scale_modifier = None
         gyro_range = self.get_gyro_range(True)
 
-        if gyro_range == self.GYRO_RANGE_250DEG:
-            gyro_scale_modifier = self.GYRO_SCALE_MODIFIER_250DEG
-        elif gyro_range == self.GYRO_RANGE_500DEG:
-            gyro_scale_modifier = self.GYRO_SCALE_MODIFIER_500DEG
-        elif gyro_range == self.GYRO_RANGE_1000DEG:
-            gyro_scale_modifier = self.GYRO_SCALE_MODIFIER_1000DEG
-        elif gyro_range == self.GYRO_RANGE_2000DEG:
-            gyro_scale_modifier = self.GYRO_SCALE_MODIFIER_2000DEG
+        if gyro_range == self.GYR_RNG_250DEG:
+            gyro_scale_modifier = self.GYR_SCLR_250DEG
+        elif gyro_range == self.GYR_RNG_500DEG:
+            gyro_scale_modifier = self.GYR_SCLR_500DEG
+        elif gyro_range == self.GYR_RNG_1000DEG:
+            gyro_scale_modifier = self.GYR_SCLR_1000DEG
+        elif gyro_range == self.GYR_RNG_2000DEG:
+            gyro_scale_modifier = self.GYR_SCLR_2000DEG
         else:
-            print("Unkown range - gyro_scale_modifier set to self.GYRO_SCALE_MODIFIER_250DEG")
-            gyro_scale_modifier = self.GYRO_SCALE_MODIFIER_250DEG
+            print("Unkown range - gyro_scale_modifier set to self.GYR_SCLR_250DEG")
+            gyro_scale_modifier = self.GYR_SCLR_250DEG
 
         x = x / gyro_scale_modifier
         y = y / gyro_scale_modifier
