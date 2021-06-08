@@ -6,10 +6,21 @@ from utime import sleep_ms
 motion = PiicoDev_MPU6050()
 
 while True:
-    accel = motion.get_accel_data() # read the accelerometer [ms^-2]
-    gyro = motion.get_gyro_data()   # read the gyro [deg/s]
-    temp = motion.get_temp()   # read the device temperature [degC]
+    
+    # Accelerometer data
+    accel = motion.read_accel_data() # read the accelerometer [ms^-2]
+    print("x:" + str(accel["x"]) + " y:" + str(accel["y"]) + " z:" + str(accel["z"]))
+    
+    # Gyroscope Data
+#     gyro = motion.read_gyro_data()   # read the gyro [deg/s]
+#     print("x:" + str(gyro["x"]) + " y:" + str(gyro["y"]) + " z:" + str(gyro["z"]))
+    
+    # Rough temperature
+#     temp = motion.read_temperature()   # read the device temperature [degC]
+#     print("Temperature: " + str(temp) + "°C")
 
-    print("{}  {}  {}".format(accel, gyro, temp)) # print the data
-
+    # G-Force
+#     gforce = motion.read_accel_abs(g=True)
+#     print("G-Force: " + str(gforce))
+    
     sleep_ms(100)
