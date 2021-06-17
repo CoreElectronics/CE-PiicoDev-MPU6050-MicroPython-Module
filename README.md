@@ -4,7 +4,7 @@ This is the firmware repo for the [Core Electronics PiicoDev® Motion Sensor MPU
 
 This module depends on the [PiicoDev Unified Library](https://github.com/CoreElectronics/CE-PiicoDev-Unified). Place `PiicoDev_Unified.py` in the same directory.
 
-See the [Quickstart Guide](https://piicodev/p9)
+See the [Quickstart Guide](https://piico.dev/p9)
 
 This module has been tested on:
  - Micro:bit v2
