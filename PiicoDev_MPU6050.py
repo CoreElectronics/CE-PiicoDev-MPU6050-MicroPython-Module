@@ -71,7 +71,6 @@ class PiicoDev_MPU6050(object):
         try:
             # Wake up the MPU-6050 since it starts in sleep mode
             self.i2c.write8(self.addr, bytes([self.PWR_MGMT_1]), bytes([0x00]))
-            print('Device 0x{:02X} found'.format(self.addr))
         except Exception:
             print('Device 0x{:02X} not found'.format(self.addr))
 
