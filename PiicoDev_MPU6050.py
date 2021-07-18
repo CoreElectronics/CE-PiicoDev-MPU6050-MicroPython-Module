@@ -68,11 +68,13 @@ class PiicoDev_MPU6050(object):
     def __init__(self, addr=_MPU6050_ADDRESS, i2c_=i2c):
         self.i2c = i2c_
         self.addr = addr
-        try:
-            # Wake up the MPU-6050 since it starts in sleep mode
-            self.i2c.write8(self.addr, bytes([self.PWR_MGMT_1]), bytes([0x00]))
-        except Exception:
-            print('Device 0x{:02X} not found'.format(self.addr))
+        for i in range(0,3):
+            try:
+                # Wake up the MPU-6050 since it starts in sleep mode
+                self.i2c.write8(self.addr, bytes([self.PWR_MGMT_1]), bytes([0x00]))
+                break
+            except Exception:
+                print('Device 0x{:02X} not found, trying again'.format(self.addr))
 
     # I2C communication method to read two I2C registers and combine them into a signed integer
     def read_i2c_word(self, register_high):
