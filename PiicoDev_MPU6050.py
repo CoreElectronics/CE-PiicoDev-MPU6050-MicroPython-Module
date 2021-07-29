@@ -5,6 +5,8 @@
 from PiicoDev_Unified import *
 from math import sqrt
 
+compat_str = '\nUnified PiicoDev library out of date.  Get the latest module: https://piico.dev/unified \n'
+
 # Address
 _MPU6050_ADDRESS = 0x68
 
@@ -65,6 +67,13 @@ class PiicoDev_MPU6050(object):
     GYRO_CONFIG = 0x1B
 
     def __init__(self, bus=None, freq=None, sda=None, scl=None, addr=_MPU6050_ADDRESS):
+        try:
+            if compat_ind >= 1:
+                pass
+            else:
+                print(compat_str)
+        except:
+            print(compat_str)
         self.i2c = create_unified_i2c(bus=bus, freq=freq, sda=sda, scl=scl)
         self.addr = addr
         self.i2c.write8(self.addr, bytes([self.PWR_MGMT_1]), bytes([0x00]))  # need to put this back
@@ -87,7 +96,11 @@ class PiicoDev_MPU6050(object):
     # Reads the temperature from the onboard temperature sensor of the MPU-6050.
     # Returns the temperature [degC].
     def read_temperature(self):
-        raw_temp = self.read_i2c_word(self.TEMP_OUT0)
+        try:
+            raw_temp = self.read_i2c_word(self.TEMP_OUT0)
+        except:
+            print(i2c_err_str.format(self.addr))
+            return float('NaN')
         actual_temp = (raw_temp / 340) + 36.53
         return actual_temp
 
@@ -120,10 +133,14 @@ class PiicoDev_MPU6050(object):
     # Reads and returns the X, Y and Z values from the accelerometer.
     # Returns dictionary data in g or m/s^2 (g=False)
     def read_accel_data(self, g = False):
-        x = self.read_i2c_word(self.ACCEL_XOUT0)
-        y = self.read_i2c_word(self.ACCEL_YOUT0)
-        z = self.read_i2c_word(self.ACCEL_ZOUT0)
-
+        try:
+            x = self.read_i2c_word(self.ACCEL_XOUT0)
+            y = self.read_i2c_word(self.ACCEL_YOUT0)
+            z = self.read_i2c_word(self.ACCEL_ZOUT0)
+        except:
+            print(i2c_err_str.format(self.addr))
+            return {'x': float('NaN'), 'y': float('NaN'), 'z': float('NaN')}
+        scaler = None
         scaler = None
         accel_range = self.get_accel_range(True)
 
@@ -184,10 +201,13 @@ class PiicoDev_MPU6050(object):
     # Returns the read values in a dictionary.
     def read_gyro_data(self):
         # Read the raw data from the MPU-6050
-        x = self.read_i2c_word(self.GYRO_XOUT0)
-        y = self.read_i2c_word(self.GYRO_YOUT0)
-        z = self.read_i2c_word(self.GYRO_ZOUT0)
-
+        try:    
+            x = self.read_i2c_word(self.GYRO_XOUT0)
+            y = self.read_i2c_word(self.GYRO_YOUT0)
+            z = self.read_i2c_word(self.GYRO_ZOUT0)
+        except:
+            print(i2c_err_str.format(self.addr))
+            return {'x': float('NaN'), 'y': float('NaN'), 'z': float('NaN')}
         scaler = None
         gyro_range = self.get_gyro_range(True)
 
