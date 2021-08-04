@@ -5,10 +5,8 @@
 from PiicoDev_Unified import *
 from math import sqrt
 from time import sleep
-i2c = PiicoDev_Unified_I2C()
 
 compat_str = '\nUnified PiicoDev library out of date.  Get the latest module: https://piico.dev/unified \n'
->>>>>>> dev-i2c-options
 
 # Address
 _MPU6050_ADDRESS = 0x68
@@ -68,10 +66,6 @@ class PiicoDev_MPU6050(object):
 
     ACCEL_CONFIG = 0x1C
     GYRO_CONFIG = 0x1B
-
-    def __init__(self, addr=_MPU6050_ADDRESS, i2c_=i2c):
-        self.i2c = i2c_
-        self.addr = addr
         
     def __init__(self, bus=None, freq=None, sda=None, scl=None, addr=_MPU6050_ADDRESS):
         try:
