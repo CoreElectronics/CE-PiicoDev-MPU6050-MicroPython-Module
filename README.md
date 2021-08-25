@@ -58,6 +58,8 @@ scl | Pin | Device Dependent | Device Dependent | I2C SCL Pin. Implemented on Ra
 address | int | 0x68, 0x69 | 0x68 | This address needs to match the PiicoDev Motion Sensor MPU6050 hardware address configured by the jumper or ADR pin
 
 ### PiicoDev_MPU6050.read_accel_data(g=False)
+Returns a dictionary `x` `y` `z`
+
 Parameter | Type | Default | Description | Unit
 --- | --- | --- | --- | ---
 g | bool |  False | If False, retuned units are m/s.  If True, returned units are g
@@ -72,11 +74,13 @@ g | bool |  False | If False, retuned units are m/s.  If True, returned units ar
 returned | float | | Acceleration magnitude | g or m/s
 
 ### PiicoDev_MPU6050.read_gyro_data()
-Parameter | Type | Default | Description | Unit
---- | --- | --- | --- | ---
-returned x | float | | x value from gyroscope |
-returned y | float | | y value from gyroscope |
-returned z | float | | z value from gyroscope |
+Returns a dictionary `x` `y` `z`
+
+Parameter | Type | Description | Unit
+--- | --- | --- | ---
+returned x | float | x value from gyroscope | deg/s
+returned y | float | y value from gyroscope | deg/s
+returned z | float | z value from gyroscope | deg/s
 
 ### PiicoDev_MPU6050.read_temperature()
 
