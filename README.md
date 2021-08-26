@@ -88,7 +88,7 @@ Parameter | Type | Description | Unit
 --- | --- | --- | ---
 returned | float | Temperature | degC
 
-### PiicoDev_MPU6050.get_accel_range(raw = False)
+### PiicoDev_MPU6050.get_accel_range(raw=False)
 Parameter | Type | Default | Description | Unit
 --- | --- | --- | --- | ---
 raw | bool |  False | If False, returned ranger is integer: -1, 2, 4, 8 or 16.  If True, returned range is the raw value from the ACCEL_CONFIG register
@@ -99,7 +99,7 @@ Parameter | Type | Description
 --- | --- | ---
 accel_range | int | the range to set the accelerometer to. Using a pre-defined range from the [MPU-6050 datasheet](https://invensense.tdk.com/wp-content/uploads/2015/02/MPU-6000-Datasheet1.pdf) is advised.
 
-### PiicoDev_MPU6050.get_gyro_range(raw = False)
+### PiicoDev_MPU6050.get_gyro_range(raw=False)
 Parameter | Type | Default | Description | Unit
 --- | --- | --- | --- | ---
 raw | bool |  False | If False, returned range is deg/s.  If True, returned range is the raw value from GYRO_CONFIG register
