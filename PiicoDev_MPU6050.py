@@ -118,7 +118,7 @@ class PiicoDev_MPU6050(object):
     # raw=False: Return integer: -1, 2, 4, 8 or 16. When it returns -1 something went wrong.
     def get_accel_range(self, raw = False):
         # Get the raw value
-        raw_data = self.i2c.read16(self.addr, bytes([self.ACCEL_CONFIG]))
+        raw_data = self.i2c.readfrom_mem(self.addr, self.ACCEL_CONFIG, 2)
         if raw is True:
             return raw_data[0]
         elif raw is False:
@@ -184,7 +184,7 @@ class PiicoDev_MPU6050(object):
     # raw=False: return range in deg/s
     def get_gyro_range(self, raw = False):
         # Get the raw value
-        raw_data = self.i2c.read16(self.addr, bytes([self.GYRO_CONFIG]))
+        raw_data = self.i2c.readfrom_mem(self.addr, self.GYRO_CONFIG, 2)
 
         if raw is True:
             return raw_data[0]
