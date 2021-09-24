@@ -31,7 +31,7 @@ class PiicoDev_MPU6050:
 		actual_temp=raw_temp/340+36.53;return actual_temp
 	def set_accel_range(self,accel_range):self.i2c.write8(self.addr,bytes([self.ACCEL_CONFIG]),bytes([0]));self.i2c.write8(self.addr,bytes([self.ACCEL_CONFIG]),bytes([accel_range]))
 	def get_accel_range(self,raw=_C):
-		raw_data=self.i2c.read16(self.addr,bytes([self.ACCEL_CONFIG]))
+		raw_data=self.i2c.readfrom_mem(self.addr,self.ACCEL_CONFIG,2)
 		if raw is _G:return raw_data[0]
 		elif raw is _C:
 			if raw_data[0]==self.ACC_RNG_2G:return 2
@@ -54,7 +54,7 @@ class PiicoDev_MPU6050:
 	def read_accel_abs(self,g=_C):d=self.read_accel_data(g);return sqrt(d[_D]**2+d[_E]**2+d[_F]**2)
 	def set_gyro_range(self,gyro_range):self.i2c.write8(self.addr,bytes([self.GYRO_CONFIG]),bytes([0]));self.i2c.write8(self.addr,bytes([self.GYRO_CONFIG]),bytes([gyro_range]))
 	def get_gyro_range(self,raw=_C):
-		raw_data=self.i2c.read16(self.addr,bytes([self.GYRO_CONFIG]))
+		raw_data=self.i2c.readfrom_mem(self.addr,self.GYRO_CONFIG,2)
 		if raw is _G:return raw_data[0]
 		elif raw is _C:
 			if raw_data[0]==self.GYR_RNG_250DEG:return 250
