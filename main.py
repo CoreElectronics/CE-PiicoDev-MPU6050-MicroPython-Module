@@ -1,7 +1,6 @@
 # Example code for PiicoDev Motion Sensor MPU6050
 from PiicoDev_MPU6050 import PiicoDev_MPU6050
-
-from time import sleep
+from PiicoDev_Unified import sleep_ms # Cross-platform compatible sleep function
 
 motion = PiicoDev_MPU6050()
 
@@ -29,4 +28,4 @@ while True:
 #     gforce = motion.read_accel_abs(g=True) # read the absolute acceleration magnitude
 #     print("G-Force: " + str(gforce))
     
-    sleep(0.1)
+    sleep_ms(100)
