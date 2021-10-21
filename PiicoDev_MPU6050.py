@@ -4,7 +4,6 @@
 
 from PiicoDev_Unified import *
 from math import sqrt
-from time import sleep
 
 compat_str = '\nUnified PiicoDev library out of date.  Get the latest module: https://piico.dev/unified \n'
 
