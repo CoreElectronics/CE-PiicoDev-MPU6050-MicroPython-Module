@@ -7,7 +7,6 @@ _B='y'
 _A='x'
 from PiicoDev_Unified import *
 from math import sqrt
-from time import sleep
 compat_str='\nUnified PiicoDev library out of date.  Get the latest module: https://piico.dev/unified \n'
 _GRAVITIY_MS2=9.80665
 _ACC_SCLR_2G=16384.0
