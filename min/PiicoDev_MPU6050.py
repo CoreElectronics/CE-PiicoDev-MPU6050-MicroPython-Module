@@ -6,7 +6,7 @@ _C='z'
 _B='y'
 _A='x'
 from PiicoDev_Unified import *
-from math import sqrt
+from math import sqrt,atan2
 compat_str='\nUnified PiicoDev library out of date.  Get the latest module: https://piico.dev/unified \n'
 _GRAVITIY_MS2=9.80665
 _ACC_SCLR_2G=16384.0
@@ -99,3 +99,4 @@ class PiicoDev_MPU6050:
 		elif gyro_range==_GYR_RNG_2000DEG:scaler=_GYR_SCLR_2000DEG
 		else:print('Unkown range - scaler set to _GYR_SCLR_250DEG');scaler=_GYR_SCLR_250DEG
 		x=gyro_data[_A]/scaler;y=gyro_data[_B]/scaler;z=gyro_data[_C]/scaler;return{_A:x,_B:y,_C:z}
+	def read_angle(self):a=self.read_accel_data();x=atan2(a[_B],a[_C]);y=atan2(-a[_A],a[_C]);return{_A:x,_B:y}
