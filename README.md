@@ -110,6 +110,13 @@ Parameter | Type | Description
 --- | --- | ---
 gyro_range |  int | The range to set the gyro to. Using a pre-defined range from the [MPU-6050 datasheet](https://invensense.tdk.com/wp-content/uploads/2015/02/MPU-6000-Datasheet1.pdf) is advised.
 
+### PiicoDev_MPU6050.read_angle()
+Returns a dictionary `x` `y`
+Parameter | Type | Description
+--- | --- | ---
+returned x |  float | Radians: The tilt angle about the x-axis. Refer to silkscreen axes
+returned y |  float | Radians: The tilt angle about the y-axis. Refer to silkscreen axes
+
 
 # License
 This project is open source - please review the LICENSE.md file for further licensing information.
